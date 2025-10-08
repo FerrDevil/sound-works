@@ -26,13 +26,10 @@ export default function MusicPlayerView() {
 
     const [music, setMusic] = useState<TMusic | null>(null)
     const [isMusicPending, startMusicTransition] = useTransition()
- 
+
     useEffect(() => {
-        
         startMusicTransition( async () => {
             const theMusic = await getMusicById(musicId) || null
-            
-
             setMusic(theMusic)
         })
     }, [musicId, playlistId])
@@ -41,14 +38,14 @@ export default function MusicPlayerView() {
   return (
     <>
     {
-        (musicId !== 0 || playlistId !== 0) &&
+        musicId !== 0  && music &&
         <> 
 
         <Audio src={music && music.music} ref={audioRef} /> 
         
     
     <motion.div 
-        className={isOpen? "flex flex-col gap-3 fixed inset-0 bg-black p-4 z-999": "flex flex-row items-center py-2 px-2 gap-2 relative w-full" }
+        className={isOpen ? "flex flex-col gap-3 fixed inset-0 bg-black p-4 z-999": "flex flex-row items-center py-2 px-2 gap-2 relative w-full max-h-[65px]" }
         >
         
         
@@ -63,11 +60,11 @@ export default function MusicPlayerView() {
         }
         
         <button
-            className={isOpen? "w-full": "h-full" }
+            className={isOpen? "w-full": "h-[50px]  aspect-square " }
             onClick={() => dispatchMusicPlayerProperties({type: ACTION_TYPES.OPEN_VIEW })}>
             <Image
-                className="block w-full fit-contain"
-                src={music ? music.coverImage : "/da.png"} alt="music-cover" width={isOpen ? 300 : 36} height={isOpen ? 300 : 36}
+                className="block w-full fit-contain max-h-full"
+                src={music ? music.coverImage : "/da.png"} alt="music-cover" width={300} height={300}
             />
         </button>
         <div>
@@ -87,11 +84,11 @@ export default function MusicPlayerView() {
         </div>
         
         <div className="flex flex-col gap-[2px]">
-            <h2 className=""> {music ? music.title : ""}</h2>
-            <Link href={`/author/${music?.author.id}`} className="text-sm text-[#bbbbbb]" onClick={(event) =>{if (!isOpen) event.preventDefault(); dispatchMusicPlayerProperties({type: ACTION_TYPES.CLOSE_VIEW }) } }> {music ? music.author.name : ""} </Link>
+            <h2 className=""> {music.title}</h2>
+            <Link href={`/author/${music.author.id}`} className="text-sm text-[#bbbbbb]" onClick={(event) =>{if (!isOpen) event.preventDefault(); dispatchMusicPlayerProperties({type: ACTION_TYPES.CLOSE_VIEW }) } }> {music ? music.author.name : ""} </Link>
         </div>
         <div className={isOpen ? "flex gap-5 items-center justify-center" : "ms-auto flex gap-3"}>
-            <PlayButton />
+            <PlayButton  />
             {!isOpen && <CloseButton />}
         </div>
 

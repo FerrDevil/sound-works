@@ -9,7 +9,7 @@ type AudioProps = {
 }
 
 export default function Audio({ref, src}: AudioProps) {
-    const { musicPlayerProperties, dispatchMusicPlayerProperties } = useMusicPlayer()
+    const { musicPlayerProperties:{settings: {state}}, dispatchMusicPlayerProperties } = useMusicPlayer()
 
     useEffect(() => {
         if (!ref.current ) return;
@@ -17,14 +17,19 @@ export default function Audio({ref, src}: AudioProps) {
     }, [ref])
 
        useEffect(() => {
-        if (!ref.current ) return;
-        if (musicPlayerProperties.settings.state === "playing") ref.current.play() 
-        else if (musicPlayerProperties.settings.state === "paused") ref.current.pause()
+        const callback = async () => {
+            if (!ref.current ) return;
+            if (state === "playing") ref.current.play() 
+            else if (state === "paused"){
+                ref.current.pause()
+            }  
+        }
+        callback()
 
-    }, [musicPlayerProperties.settings.state])
+    }, [state])
 
     const onTimeUpdate : React.ReactEventHandler<HTMLAudioElement>  = (event) => {
-        dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_CURRENT_TIME, payload: { currentTime: (event.target as HTMLAudioElement).currentTime} })
+        dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_CURRENT_TIME, payload: { currentTime: event.currentTarget.currentTime} })
         
     }
     const onEnded : React.ReactEventHandler<HTMLAudioElement> = () => {
@@ -32,24 +37,19 @@ export default function Audio({ref, src}: AudioProps) {
     }
 
     const onLoaded: React.ReactEventHandler<HTMLAudioElement> = (event) => {
-        dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_DURATION, payload: { duration: (event.target as HTMLAudioElement).duration} })
+        dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_DURATION, payload: { duration: event.currentTarget.duration} })
         
     }
-    const setPlay = () => {
-       
-        dispatchMusicPlayerProperties({
-            type: ACTION_TYPES.SET_MUSIC_STATE, payload: {state: "playing"}
-        })
-
-    }
+    const setPlay = () => { dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_MUSIC_STATE, payload: {state: "playing"}}) }
     return (
         <>
         {
-            src && 
+            src &&  
             <audio className="hidden" ref={ref} controls src={src} 
                 onCanPlay={setPlay}
                 onLoadedMetadata={onLoaded}
-               
+                onPause={() => dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_MUSIC_STATE, payload: {state: "paused"}})}
+                onPlaying={() => dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_MUSIC_STATE, payload: {state: "playing"}})}
                 onEnded={onEnded}
                 onTimeUpdate={onTimeUpdate}
             />
