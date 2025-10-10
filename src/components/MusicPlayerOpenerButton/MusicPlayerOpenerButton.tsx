@@ -4,10 +4,10 @@ import { useMusicPlayer, ACTION_TYPES } from "../MusicPlayerView/MusicPlayerProv
 type MusicPlayerOpenerButtonProps = { 
     playlistId?: number,
     musicId?: number
-} & React.PropsWithChildren
+} & React.PropsWithChildren & React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>
 
-export default function MusicPlayerOpenerButton(props : MusicPlayerOpenerButtonProps) {
-    const {playlistId=0, musicId=0} = props 
+export default function MusicPlayerOpenerButton({playlistId=0, musicId=0, children, ...buttonArgs} : MusicPlayerOpenerButtonProps) {
+
     const { dispatchMusicPlayerProperties} = useMusicPlayer()
 
 
@@ -18,6 +18,6 @@ export default function MusicPlayerOpenerButton(props : MusicPlayerOpenerButtonP
         })
     }
     return (
-        <button onClick={onClick}>{props.children}</button>
+        <button onClick={onClick} {...buttonArgs}>{children}</button>
     )
 }

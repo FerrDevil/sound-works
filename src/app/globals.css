@@ -42,18 +42,18 @@ body {
 
 @layer components {
   input.music-slider[type=range] {
-    @apply appearance-none bg-transparent;
+    @apply appearance-none bg-transparent h-[2px];
     &::-webkit-slider-thumb {
-      @apply relative -top-[5px] bg-white appearance-none h-3 w-3 rounded-full z-1;
+      @apply relative -top-[5px] bg-white appearance-none h-3 w-3 rounded-full z-1 cursor-pointer;
     }
     &::-webkit-slider-runnable-track {
-      @apply h-[2px] -mx-[4px];
+      @apply h-[2px] -mx-[4px] cursor-pointer;
     }
     &::-moz-range-track {
-      @apply h-[2px] ;
+      @apply h-[2px] -mx-[4px];
     }
     &::-ms-track {
-      @apply h-[2px];
+     @apply h-[2px] -mx-[4px];
     }
   }
 

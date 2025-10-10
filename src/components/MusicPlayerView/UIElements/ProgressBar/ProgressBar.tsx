@@ -24,9 +24,8 @@ export default function ProgressBar({readonly, audioRef} : ProgressBarProps) {
             const eventTarget = event.currentTarget as HTMLAudioElement
             if (eventTarget.seekable.length === 0 ) return
             setSeekingPart(eventTarget.seekable.end(0))
-            console.log(eventTarget.seekable.end(0))
         }
-    }, [])
+    }, [audioRef])
    
 
     return (
@@ -35,7 +34,7 @@ export default function ProgressBar({readonly, audioRef} : ProgressBarProps) {
                 !readonly &&
                 <input type="range" className=" music-slider col-start-1 -col-end-1" min={0} max={duration} step={1}  value={currentTime} onChange={onChange} />
             }
-            <div className={`w-full bg-(--secondary-accent-color) ${readonly? "h-[1px]" : "absolute inset-0"} `}/>
+            <div className={`w-full bg-(--secondary-accent-color) select-none ${readonly? "h-[1px]" : "absolute inset-0"} `}/>
             <motion.div animate={{
                 width: seekingPart / duration * 100 + "%",
                 transition: {
@@ -44,7 +43,7 @@ export default function ProgressBar({readonly, audioRef} : ProgressBarProps) {
                         ease: "linear"
                     }
                 }
-            }} className="w-0 bg-(--secondary-main-color) absolute inset-0 "/>
+            }} className="w-0 bg-(--secondary-main-color) select-none absolute inset-0 "/>
             <motion.div animate={{
                 width: currentTime / duration * 100 + "%",
                 transition: {
@@ -53,7 +52,7 @@ export default function ProgressBar({readonly, audioRef} : ProgressBarProps) {
                         ease: "linear"
                     }
                 }
-            }} className="w-0 bg-(--primary-color) absolute inset-0 "/>
+            }} className="w-0 bg-(--primary-color) select-none absolute inset-0 "/>
             
             
         </div>

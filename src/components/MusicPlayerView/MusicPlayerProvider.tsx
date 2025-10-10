@@ -66,6 +66,9 @@ function musicPlayerReducer(state: TState, action: DispatchArgs): TState{
             if (!action.payload){
                 throw Error("No payload provided for dispatch type:" + action.type)
             }
+            if (action.payload.musicId === state.musicId){
+                return state
+            }
             return {
                 ...state,
                 settings: {
