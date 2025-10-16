@@ -8,8 +8,12 @@
   --foreground: #ededed;
 
   --primary-color: hsla(0, 0%, 100%);
-  --secondary-main-color: hsla(0, 0%, 80%);
+  --secondary-main-color: hsla(0, 0%, 60%);
   --secondary-accent-color: hsla(0, 0%, 20%);
+
+  --disabled-color: hsla(0, 0%, 50%);
+
+  --header-width: 60px;
 }
 
 @theme inline {
@@ -26,10 +30,36 @@
   }
 } */
 
+html, body{
+  /* height: 100%;
+  overflow:hidden; */ 
+}
+
 body {
     background: var(--background);
     color: var(--foreground);
     font-family: Arial, Helvetica, sans-serif;
+    min-height: 100svh;
+    & > main{
+      flex-grow: 1;
+    }
+}
+
+main{
+  &::-webkit-scrollbar{
+    background:transparent;
+  }
+  &::-webkit-scrollbar-track{
+    background:#fff;
+    z-index: 999;
+  }
+  &::-webkit-scrollbar-thumb{
+    background:#000;
+    z-index: 999;
+  }
+  &::-webkit-scrollbar-buttons{
+    background:#fff;
+  }
 }
 
 @layer base {
@@ -46,8 +76,12 @@ body {
     &::-webkit-slider-thumb {
       @apply relative -top-[5px] bg-white appearance-none h-3 w-3 rounded-full z-1 cursor-pointer;
     }
+    &::-moz-range-thumb {
+      @apply relative -top-[5px] bg-white appearance-none h-3 w-3 rounded-full z-1 cursor-pointer;
+    }
+    
     &::-webkit-slider-runnable-track {
-      @apply h-[2px] -mx-[4px] cursor-pointer;
+      @apply h-[2px] -mx-[4px];
     }
     &::-moz-range-track {
       @apply h-[2px] -mx-[4px];

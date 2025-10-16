@@ -5,9 +5,9 @@ const MusicPlayerView = dynamic(() => import("@/components/MusicPlayerView/Music
 
 export default function Header() {
   return (
-    <header className="fixed left-0 right-0 bottom-0 gap-3 grid bg-[#0a0a0a] z-999 isolate">
+    <header className="fixed left-0 right-0 bottom-0 md:w-(--header-width) md:mx-auto md:right-auto md:top-0  gap-3 grid bg-[#0a0a0a] z-999 isolate">
       <MusicPlayerView/>
-        <nav className="grid grid-flow-col py-4">
+        <nav className="flex justify-between md:justify-normal px-10 md:px-0 py-4 md:py-4  gap-2 md:flex md:flex-col">
           <ul className="contents">
             <li >
               <Link href={"/"} className="flex flex-col gap-1 items-center">

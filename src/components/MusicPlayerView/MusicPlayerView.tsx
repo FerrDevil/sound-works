@@ -9,10 +9,12 @@ import Audio from "./Audio";
 import PlayButton from "./UIElements/PlayButton/PlayButton";
 import ProgressBar from "./UIElements/ProgressBar/ProgressBar";
 import CloseButton from "./UIElements/CloseButton/CloseButton";
+import MoveQueueButton from "./UIElements/MoveQueueButton/MoveQueueButton";
 
 
 const timeToFormat = (seconds: number) => {
     seconds = Math.floor(seconds)
+    if (seconds < 60) return `00:${seconds< 10 ? `0${seconds}`: seconds}`
     const minutes = Math.floor(seconds / 60)
     seconds %= 60
     const out = `${minutes<10 ? `0${minutes}`: minutes}:${seconds<10 ? `0${seconds}`: seconds}`
@@ -45,13 +47,14 @@ export default function MusicPlayerView() {
         
     
     <motion.div 
-        className={`bg-(--background) isolate ${isOpen ? "flex flex-col gap-3 fixed inset-0 p-4 z-1000": "flex flex-row items-center py-2 px-2 gap-2 relative w-full max-h-[65px]"}` }
+        className={`bg-(--background) isolate ${isOpen ? "flex flex-col gap-3 fixed inset-0  p-4 z-1000 md:left-auto md:top-auto md:border-1 md:border-(--secondary-accent-color) ": "md:fixed md:left-(--header-width) md:inset-0 md:bottom-px  md:top-auto max-w-[100vw] overflow-hidden flex flex-row items-center py-2 px-2 gap-2 relative "}` }
         >
         
         
-        {isOpen &&
+        {
+            isOpen &&
             <div> 
-                <button onClick={() => dispatchMusicPlayerProperties({type: ACTION_TYPES.CLOSE_VIEW })}>
+                <button className="cursor-pointer" onClick={() => dispatchMusicPlayerProperties({type: ACTION_TYPES.CLOSE_VIEW })}>
                     <svg width="16" height="16" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M18 28.5L0 10.2568L4.2 6L18 19.9865L31.8 6L36 10.2568L18 28.5Z" fill="white"/>
                     </svg>
@@ -66,10 +69,10 @@ export default function MusicPlayerView() {
             />
         </div>
         <button
-            className={`absolute inset-0 z-0 ${isOpen? "hidden": ""}` }
+            className={`absolute inset-0 z-0 cursor-pointer ${isOpen? "hidden": ""}` }
             onClick={() => dispatchMusicPlayerProperties({type: ACTION_TYPES.OPEN_VIEW })} 
         />
-        <div>
+        <div className="flex flex-col gap-1 ">
             <ProgressBar audioRef={audioRef} readonly={!isOpen}/>
 
             {
@@ -85,13 +88,15 @@ export default function MusicPlayerView() {
             }
         </div>
         
-        <div className="flex flex-col gap-[2px]">
-            <h2 className="">{ music.title }</h2>
-            <Link href={`/author/${music.author.id}`} className="text-sm text-[#bbbbbb]" onClick={(event) =>{if (!isOpen) event.preventDefault(); dispatchMusicPlayerProperties({type: ACTION_TYPES.CLOSE_VIEW }) } }> {music ? music.author.name : ""} </Link>
+        <div className="flex flex-col gap-[2px] flex-shrink-1 max-w-min">
+            <h2 className="truncate max-sm:text-sm">{ music.title }</h2>
+            <Link href={`/author/${music.author.id}`} className=" truncate text-sm text-[#bbbbbb]" onClick={(event) =>{if (!isOpen) event.preventDefault(); dispatchMusicPlayerProperties({type: ACTION_TYPES.CLOSE_VIEW }) } }> {music ? music.author.name : ""} </Link>
         </div>
-        <div className={isOpen ? "flex gap-5 items-center justify-center" : "ms-auto flex gap-3 z-0"}>
+        <div className={isOpen ? "flex gap-5 items-center justify-center" : "ms-auto flex gap-3 z-0 items-center"}>
+            <MoveQueueButton type="backwards"/>
             <PlayButton  />
-            {!isOpen && <CloseButton />}
+            <MoveQueueButton type="forwards"/>
+           {/*  {!isOpen && <CloseButton />} */}
         </div>
 
         {isOpen && (
@@ -103,7 +108,7 @@ export default function MusicPlayerView() {
                     Плейлист
                 </button>
                 <button disabled>
-                    Лирика
+                    Текст
                 </button>
             </div>
         )}

@@ -34,7 +34,19 @@ const musicList = [
         coverImage: "/covers/tpov.jpg",
         music: "/music/tpov.mp3"
 
-    }
+    },
+    {
+        id: 3,
+        title: "If I Cry",
+        author: {
+            id: 2,
+            name: "Yuki Kajiura"
+        },
+        coverImage: "/covers/ificry.webp",
+        music: "/music/ificry.mp3"
+
+    },
+
 ]
 
 const playlists = [

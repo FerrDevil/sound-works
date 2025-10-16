@@ -8,21 +8,21 @@ const actionTypesValues = ["SET_MUSIC", "OPEN_VIEW", "CLOSE_VIEW", "RESET", "SET
 type ActionTypes = typeof actionTypesValues[number]
 
 
-export const ACTION_TYPES: Record<ActionTypes, ActionTypes> = {
-    SET_MUSIC: "SET_MUSIC",
-    OPEN_VIEW: "OPEN_VIEW",
-    CLOSE_VIEW: "CLOSE_VIEW",
-    RESET: "RESET",
-    SET_MUSIC_STATE: "SET_MUSIC_STATE",
-    SET_DURATION: "SET_DURATION",
-    SET_CURRENT_TIME: "SET_CURRENT_TIME"
+export const ACTION_TYPES: Record<ActionTypes, number> = {
+    SET_MUSIC: 0,
+    OPEN_VIEW: 1,
+    CLOSE_VIEW: 2,
+    RESET: 3,
+    SET_MUSIC_STATE: 4,
+    SET_DURATION: 5,
+    SET_CURRENT_TIME: 6
 }
-type TMusicState = "playing" | "paused" | "ended"
+type TPlayingState = "playing" | "paused" | "ended"
 
 type TMainMusicState = {
     isOpen: boolean,
     settings: {
-        state: TMusicState,
+        state: TPlayingState,
         duration: number,
         currentTime: number, 
         volume: number 
@@ -31,14 +31,14 @@ type TMainMusicState = {
 
 type TState = {
     playlistId: number ,
-    musicId: number, 
+    musicId: number,
+    queue: number[],
 } & TMainMusicState
 
 
-
 type DispatchArgs = {
-    type: ActionTypes,
-    payload?: Record<string, string | number>
+    type: number,
+    payload?: Record<string, string | number | boolean>
 }
 
 type TMusicPlayerContext = {
@@ -49,6 +49,7 @@ type TMusicPlayerContext = {
 const initialState: TState = { 
     playlistId: 0,
     musicId: 0,
+    queue: [],
     isOpen: false,
     settings: {
         state: "paused",
@@ -66,16 +67,35 @@ function musicPlayerReducer(state: TState, action: DispatchArgs): TState{
             if (!action.payload){
                 throw Error("No payload provided for dispatch type:" + action.type)
             }
-            if (action.payload.musicId === state.musicId){
+            const { musicId , playlistId, needQueueChange } = action.payload
+            if (musicId === state.musicId){
                 return state
             }
+            
+            const currentTrackQueueIndex = state.queue.findIndex((item) => item === state.musicId)
+            const newTrackQueueIndex = state.queue.findIndex((item) => item === musicId)
+            const newTrackInQueue = newTrackQueueIndex !== -1
+            const queue = needQueueChange ? 
+                [musicId as number]     
+            :
+                newTrackInQueue ?
+                    state.queue
+                   
+                   
+                :
+                    [...state.queue.slice(0, currentTrackQueueIndex+1), musicId as number]
+                
+                  
+             
+                
             return {
                 ...state,
                 settings: {
                     ...initialState.settings
                 },
-                musicId: (action.payload.musicId as number),
-                playlistId: (action.payload.playlistId as number),
+                musicId: (musicId as number),
+                playlistId: (playlistId as number),
+                queue: queue
             }
         }
         case ACTION_TYPES.OPEN_VIEW:{
@@ -105,7 +125,7 @@ function musicPlayerReducer(state: TState, action: DispatchArgs): TState{
                 ...state,
                 settings: {
                     ...state.settings,
-                    state: action.payload.state as TMusicState
+                    state: action.payload.state as TPlayingState
                 }
             }
         }
@@ -150,6 +170,7 @@ export const useMusicPlayer = () => {
 
 export default function MusicPlayerProvider({children}: React.PropsWithChildren) {
     const [musicPlayerProperties, dispatchMusicPlayerProperties] = useReducer(musicPlayerReducer, initialState)
+    console.log(musicPlayerProperties.queue)
     return (
         <MusicPlayerContext.Provider value={{musicPlayerProperties, dispatchMusicPlayerProperties }}>{children}</MusicPlayerContext.Provider>
     )
