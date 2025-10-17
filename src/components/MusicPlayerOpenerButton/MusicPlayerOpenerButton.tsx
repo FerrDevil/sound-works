@@ -5,9 +5,10 @@ type MusicPlayerOpenerButtonProps = {
     playlistId?: number,
     musicId?: number,
     needQueueChange?: boolean,
+    queue?: number[]
 } & React.PropsWithChildren & React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>
 
-export default function MusicPlayerOpenerButton({playlistId=0, musicId=0, needQueueChange=false, children, ...buttonArgs} : MusicPlayerOpenerButtonProps) {
+export default function MusicPlayerOpenerButton({playlistId=0, musicId=0, needQueueChange=false, queue=[], children, ...buttonArgs} : MusicPlayerOpenerButtonProps) {
 
     const { dispatchMusicPlayerProperties} = useMusicPlayer()
 
@@ -15,7 +16,7 @@ export default function MusicPlayerOpenerButton({playlistId=0, musicId=0, needQu
     const onClick = () => {
         dispatchMusicPlayerProperties({
             type: ACTION_TYPES.SET_MUSIC,
-            payload: {playlistId, musicId, needQueueChange}
+            payload: {playlistId, musicId, needQueueChange, queue}
         })
     }
     return (

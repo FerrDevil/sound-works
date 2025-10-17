@@ -38,7 +38,7 @@ type TState = {
 
 type DispatchArgs = {
     type: number,
-    payload?: Record<string, string | number | boolean>
+    payload?: Record<string, string | number | boolean | number[]>
 }
 
 type TMusicPlayerContext = {
@@ -67,15 +67,12 @@ function musicPlayerReducer(state: TState, action: DispatchArgs): TState{
             if (!action.payload){
                 throw Error("No payload provided for dispatch type:" + action.type)
             }
-            const { musicId , playlistId, needQueueChange } = action.payload
-            if (musicId === state.musicId){
-                return state
-            }
+            const { musicId , playlistId, needQueueChange, queue } = action.payload
             
             const currentTrackQueueIndex = state.queue.findIndex((item) => item === state.musicId)
             const newTrackQueueIndex = state.queue.findIndex((item) => item === musicId)
             const newTrackInQueue = newTrackQueueIndex !== -1
-            const queue = needQueueChange ? 
+            const q = needQueueChange ? 
                 [musicId as number]     
             :
                 newTrackInQueue ?
@@ -87,15 +84,12 @@ function musicPlayerReducer(state: TState, action: DispatchArgs): TState{
                 
                   
              
-                
             return {
                 ...state,
-                settings: {
-                    ...initialState.settings
-                },
+                settings: musicId !== state.musicId? initialState.settings :state.settings,
                 musicId: (musicId as number),
-                playlistId: (playlistId as number),
-                queue: queue
+                playlistId: playlistId ? (playlistId as number) : state.playlistId,
+                queue: queue && (queue as number[]).length !== 0 ? queue as number[] : q
             }
         }
         case ACTION_TYPES.OPEN_VIEW:{
@@ -170,7 +164,7 @@ export const useMusicPlayer = () => {
 
 export default function MusicPlayerProvider({children}: React.PropsWithChildren) {
     const [musicPlayerProperties, dispatchMusicPlayerProperties] = useReducer(musicPlayerReducer, initialState)
-    console.log(musicPlayerProperties.queue)
+    console.log(musicPlayerProperties)
     return (
         <MusicPlayerContext.Provider value={{musicPlayerProperties, dispatchMusicPlayerProperties }}>{children}</MusicPlayerContext.Provider>
     )

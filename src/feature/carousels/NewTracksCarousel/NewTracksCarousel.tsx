@@ -44,14 +44,14 @@ export default async function NewTracksCarousel() {
     const newTracks = await getNewTracks() 
 
   return (
-    <div className='flex flex-col gap-1'>
-        <h2>Новые треки</h2>
-        <div className="w-full overflow-auto h-[300px]">
+    <div className='flex flex-col gap-2'>
+        <h2 className='text-[1.2rem]'>Новые треки</h2>
+        <div className="w-full overflow-auto ">
             <div className="grid lg:auto-cols-[25%] md:auto-cols-[33%] auto-cols-[95%]  gap-[5px] grid-flow-col w-full scroll h-full">
                 {
                     newTracks.map(track => (
-                        <MusicPlayerOpenerButton key={track.id} musicId={track.id} needQueueChange className="cursor-pointer relative">
-                            <Image className="object-cover"  src={track.coverImage} fill alt={`${track.title}Image`}></Image>
+                        <MusicPlayerOpenerButton key={track.id} musicId={track.id} needQueueChange className="cursor-pointer relative w-full grid">
+                            <Image draggable={false} className="object-cover select-none w-full h-full"  src={track.coverImage} width={300} height={300} alt={`${track.title}Image`}></Image>
                         </MusicPlayerOpenerButton>
                     ))
                 }
@@ -60,3 +60,4 @@ export default async function NewTracksCarousel() {
     </div>
   )
 }
+/* h-[300px] md:h-[400px] */
