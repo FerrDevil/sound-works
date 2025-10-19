@@ -1,9 +1,13 @@
+import ActionRequiresAuth from "@/components/ActionRequiresAuth/ActionRequiresAuth";
+import { auth } from "@/configs/auth";
 import dynamic from "next/dynamic";
 
 import Link from "next/link";
 const MusicPlayerView = dynamic(() => import("@/components/MusicPlayerView/MusicPlayerView"))
 
-export default function Header() {
+export default async function Header() {
+  const session = await auth()
+
   return (
     <header className="fixed left-0 right-0 bottom-0 md:w-(--header-width) md:mx-auto md:right-auto md:top-0  gap-3 grid bg-[#0a0a0a] z-999 isolate">
       <MusicPlayerView/>
@@ -30,12 +34,22 @@ export default function Header() {
               </Link> 
             </li>
             <li>
-              <Link href={"/library"} className="flex flex-col gap-1 items-center">
-                <svg width={36} height={36} viewBox="0 0 24 24"  fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M2 20V18H22V20H2ZM4 16V8H6V16H4ZM8 16V4H10V16H8ZM12 16V4H14V16H12ZM19 16L15 9L16.75 8L20.75 15L19 16Z" fill="white"/>
-                </svg>
-                
-              </Link> 
+              {
+                !session?.user ? 
+                  <ActionRequiresAuth key={"library"} >
+                    <svg width={36} height={36} viewBox="0 0 24 24"  fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 20V18H22V20H2ZM4 16V8H6V16H4ZM8 16V4H10V16H8ZM12 16V4H14V16H12ZM19 16L15 9L16.75 8L20.75 15L19 16Z" fill="white"/>
+                    </svg>
+                  </ActionRequiresAuth>
+                  :
+                  <Link href={"/library"} key={"library"} className="flex flex-col gap-1 items-center">
+                    <svg width={36} height={36} viewBox="0 0 24 24"  fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 20V18H22V20H2ZM4 16V8H6V16H4ZM8 16V4H10V16H8ZM12 16V4H14V16H12ZM19 16L15 9L16.75 8L20.75 15L19 16Z" fill="white"/>
+                    </svg>
+                  </Link> 
+              }
+              
+              
             </li>
           </ul>
         </nav>

@@ -30,7 +30,7 @@ export default function Audio({ref, src}: AudioProps) {
 
     const onTimeUpdate : React.ReactEventHandler<HTMLAudioElement>  = (event) => {
         dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_CURRENT_TIME, payload: { currentTime: event.currentTarget.currentTime} })
-        
+    
     }
     const onEnded : React.ReactEventHandler<HTMLAudioElement> = () => {
         dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_MUSIC_STATE, payload: {state: "ended"}})
@@ -45,13 +45,15 @@ export default function Audio({ref, src}: AudioProps) {
         <>
         {
             src &&  
-            <audio className="hidden" ref={ref} controls src={src} 
+            <audio className="hidden" ref={ref} src={src} 
+                
                 onCanPlay={setPlay}
                 onLoadedMetadata={onLoaded}
                 onPause={() => dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_MUSIC_STATE, payload: {state: "paused"}})}
                 onPlaying={() => dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_MUSIC_STATE, payload: {state: "playing"}})}
                 onEnded={onEnded}
                 onTimeUpdate={onTimeUpdate}
+                /* onWaiting={() => console.log("waiting")} */
             />
         }
         </>

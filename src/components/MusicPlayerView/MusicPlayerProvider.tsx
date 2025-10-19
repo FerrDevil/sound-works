@@ -164,7 +164,7 @@ export const useMusicPlayer = () => {
 
 export default function MusicPlayerProvider({children}: React.PropsWithChildren) {
     const [musicPlayerProperties, dispatchMusicPlayerProperties] = useReducer(musicPlayerReducer, initialState)
-    console.log(musicPlayerProperties)
+    /* console.log(musicPlayerProperties) */
     return (
         <MusicPlayerContext.Provider value={{musicPlayerProperties, dispatchMusicPlayerProperties }}>{children}</MusicPlayerContext.Provider>
     )

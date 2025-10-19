@@ -18,7 +18,9 @@ export default function RootLayout({
       <body className="flex">
         <Providers>
           <Header/>
-          {children}
+          <main className="flex flex-col p-5 overflow-auto isolate md:ml-(--header-width)  max-sm:pb-[150px] md:pb-[70px] gap-6">
+            {children}
+          </main>
         </Providers>
       </body>
     </html>

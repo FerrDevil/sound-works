@@ -20,11 +20,12 @@ const timeToFormat = (seconds: number) => {
     const out = `${minutes<10 ? `0${minutes}`: minutes}:${seconds<10 ? `0${seconds}`: seconds}`
     return out
 }
+const controller = new AbortController();
 
 export default function MusicPlayerView() {
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    const { musicPlayerProperties: {isOpen, musicId, settings, playlistId}, dispatchMusicPlayerProperties} = useMusicPlayer()
+    const { musicPlayerProperties: {isOpen, musicId, settings, playlistId,}, dispatchMusicPlayerProperties} = useMusicPlayer()
 
     const [music, setMusic] = useState<TMusic | null>(null)
     const [isMusicPending, startMusicTransition] = useTransition()
@@ -35,6 +36,30 @@ export default function MusicPlayerView() {
             setMusic(theMusic)
         })
     }, [musicId, playlistId])
+
+    const [waiting, setWaiting] = useState(false)
+
+    
+
+    /* console.log(waiting)
+    useEffect(() => {
+        const audioElement = audioRef.current
+        if (!audioElement) return
+        audioElement.addEventListener("waiting", () => {
+            
+            setWaiting(true)
+            
+        } , {signal: controller.signal})
+        audioElement.addEventListener("playing",() => {
+            
+            setWaiting(false)
+        }, {signal: controller.signal})
+
+        return () => {
+            controller.abort()
+        }
+
+    }, [audioRef]) */
  
     
   return (
@@ -65,6 +90,7 @@ export default function MusicPlayerView() {
         <div className={ `relative ${isOpen? "w-full aspect-square": "h-[50px]  aspect-square"}` } >
             <Image
                 className="block w-full fit-contain max-h-full"
+                draggable={false}
                 src={music ? music.coverImage : "/da.png"} alt="music-cover" fill
             />
         </div>
@@ -81,9 +107,13 @@ export default function MusicPlayerView() {
                     <span>
                         {timeToFormat(settings.currentTime)}
                     </span>
-                    <span>
-                        {timeToFormat(settings.duration)}
-                    </span>
+                    {
+                        settings.duration!== -1 &&
+                        <span>
+                            {timeToFormat(settings.duration)}
+                        </span>
+                    }
+                    
                 </div>
             }
         </div>
@@ -94,9 +124,9 @@ export default function MusicPlayerView() {
         </div>
         <div className={isOpen ? "flex gap-5 items-center justify-center" : "ms-auto flex gap-3 z-0 items-center"}>
             <MoveQueueButton type="backwards"/>
-            <PlayButton  />
+            { !waiting? <PlayButton  /> : "da"}
             <MoveQueueButton type="forwards"/>
-           {/*  {!isOpen && <CloseButton />} */}
+          
         </div>
 
         {isOpen && (
