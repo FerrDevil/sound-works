@@ -12,8 +12,11 @@
   --secondary-accent-color: hsla(0, 0%, 20%);
 
   --disabled-color: hsla(0, 0%, 50%);
-
+  --main-content-gap: 10px; 
   --header-width: 60px;
+  --main-content-ml: calc(60px + var(--main-content-gap, 0));
+
+  --error-color: #e63434;
 }
 
 @theme inline {
@@ -21,6 +24,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -44,7 +48,7 @@ body {
     }
 }
 
-main{
+html{
   &::-webkit-scrollbar{
     background:transparent;
   }
@@ -66,14 +70,69 @@ main{
   margin:0;
   padding: 0;
   box-sizing: border-box;
+  fill: inherit;
 }
 }
 
+@layer utilities {
+  .px-auto{
+    padding-inline: auto;
+  }
+}
 @layer components {
+  
+
+  .input-wrapper:has(input){
+    & > label{
+      transition: font-size 0.3s  linear, top 0.3s linear;
+      transform: translateY(-50%);
+      @apply absolute left-2 pointer-events-none select-none text-[#dddddd] top-[50%] ;
+    }
+    &>input{
+      @apply border-1 rounded-[5px] min-w-0 pt-[1.2em] px-2 pb-3;
+      &[aria-invalid="true"]{
+          @apply border-(--error-color);
+      }
+      &:autofill{
+        -webkit-background-clip: text;
+         -webkit-text-fill-color: #ffffff;
+         border-color: #ffffff;
+      }
+    }
+    & > input:not(:placeholder-shown) ~ label, & > input:focus-within ~ label{
+      top: 0.7rem;
+      @apply text-[0.7rem] ;
+    }
+  } 
+ 
   input.music-slider[type=range] {
+
+    &[data-orient=vertical] {
+        writing-mode: vertical-lr;
+        direction: rtl;
+        appearance: slider-vertical;
+        width: 100%;
+		height: 7rem;
+        vertical-align: bottom;
+
+        &::-webkit-slider-thumb {
+          @apply relative -left-[5px] bg-white appearance-none h-3 w-3 rounded-full z-1 cursor-pointer;
+        }
+        
+        &::-webkit-slider-runnable-track {
+          @apply w-[2px] -my-[4px];
+        }
+        &::-moz-range-track {
+          @apply w-[2px] -my-[4px];
+        }
+        &::-ms-track {
+        @apply w-[2px] -my-[4px];
+        }
+  	}
+    
     @apply appearance-none bg-transparent h-[2px] opacity-0;
     &::-webkit-slider-thumb {
-      @apply relative -top-[5px] bg-white appearance-none h-3 w-3 rounded-full z-1 cursor-pointer;
+      @apply relative -top-[5px] bg-white appearance-none h-[10px] w-[10px] rounded-full z-1 cursor-pointer;
     }
     &::-moz-range-thumb {
       @apply hidden;

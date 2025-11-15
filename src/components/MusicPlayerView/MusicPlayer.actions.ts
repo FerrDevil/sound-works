@@ -118,3 +118,11 @@ export async function getMusicByPlaylistIndex(playlistId: number, playlistItemIn
     
     return playlist.data[playlistItemIndex] || null
 }
+
+export async function getQueueTracks(queue: number[]){
+
+    const tracks = queue.reduce<(TMusic|null)[]>((stored, current) => ( [...stored, musicList.find(i => i.id === current) || null]), [] )
+
+    
+    return tracks.filter(i => i !== null)
+}

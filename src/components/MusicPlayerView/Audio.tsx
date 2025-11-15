@@ -1,22 +1,37 @@
 "use client"
 
-import { useEffect } from "react"
-import { useMusicPlayer, ACTION_TYPES } from "./MusicPlayerProvider"
+import { memo, useEffect } from "react"
+import { useMusicPlayerStore } from "./MusicPlayerStore"
+import { useShallow } from "zustand/shallow"
 
 type AudioProps = {
     ref:  React.RefObject<HTMLAudioElement | null>,
     src: string | null
 }
 
-export default function Audio({ref, src}: AudioProps) {
-    const { musicPlayerProperties:{settings: {state}}, dispatchMusicPlayerProperties } = useMusicPlayer()
+export default memo(function Audio({ref, src}: AudioProps) {
+
+    const { volume, state, repeat, setCurrentTime, setMusicState, setDuration, toggleRepeat, setQueueItem } =  useMusicPlayerStore( useShallow( state => (
+        {
+            volume: state.volume,
+            state: state.settings.state, 
+            repeat: state.repeat,
+            /* queue: state.queue,
+            musicId: state.musicId, */
+            toggleRepeat: state.toggleRepeat,
+            setCurrentTime: state.setCurrentTime, 
+            setMusicState: state.setMusicState, 
+            setDuration: state.setDuration,
+            setQueueItem: state.setQueueItem
+        }) ) )
+    
 
     useEffect(() => {
-        if (!ref.current ) return;
-        ref.current.volume = 0.2
-    }, [ref])
+        if(!ref.current) return
+        ref.current.volume = volume
+    }, [volume, ref])
 
-       useEffect(() => {
+    useEffect(() => {
         const callback = async () => {
             if (!ref.current ) return;
             if (state === "playing") ref.current.play() 
@@ -26,21 +41,32 @@ export default function Audio({ref, src}: AudioProps) {
         }
         callback()
 
-    }, [state])
+    }, [state, ref])
 
     const onTimeUpdate : React.ReactEventHandler<HTMLAudioElement>  = (event) => {
-        dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_CURRENT_TIME, payload: { currentTime: event.currentTarget.currentTime} })
+       
+        setCurrentTime(event.currentTarget.currentTime)
     
     }
     const onEnded : React.ReactEventHandler<HTMLAudioElement> = () => {
-        dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_MUSIC_STATE, payload: {state: "ended"}})
+        if (repeat){
+            setCurrentTime(0)
+            setMusicState("playing")
+            toggleRepeat()
+            return
+        } 
+        setMusicState("ended")
+        setTimeout(() => {
+            setQueueItem("next")
+        }, 3000)
     }
 
     const onLoaded: React.ReactEventHandler<HTMLAudioElement> = (event) => {
-        dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_DURATION, payload: { duration: event.currentTarget.duration} })
+       
+        setDuration(event.currentTarget.duration)
         
     }
-    const setPlay = () => { dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_MUSIC_STATE, payload: {state: "playing"}}) }
+    const setPlay = () => {  setMusicState("playing")}
     return (
         <>
         {
@@ -49,8 +75,8 @@ export default function Audio({ref, src}: AudioProps) {
                 
                 onCanPlay={setPlay}
                 onLoadedMetadata={onLoaded}
-                onPause={() => dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_MUSIC_STATE, payload: {state: "paused"}})}
-                onPlaying={() => dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_MUSIC_STATE, payload: {state: "playing"}})}
+                onPause={() => setMusicState("paused") }
+                onPlaying={() => setMusicState("playing") }
                 onEnded={onEnded}
                 onTimeUpdate={onTimeUpdate}
                 /* onWaiting={() => console.log("waiting")} */
@@ -59,4 +85,4 @@ export default function Audio({ref, src}: AudioProps) {
         </>
         
     )
-}
+})

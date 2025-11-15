@@ -1,6 +1,6 @@
 "use client"
 
-import { ACTION_TYPES, useMusicPlayer } from "../../MusicPlayerProvider"
+import { ACTION_TYPES, useMusicPlayer } from "../../MusicPlayerStore"
 
 export default function CloseButton() {
     const { dispatchMusicPlayerProperties } = useMusicPlayer()

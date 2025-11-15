@@ -1,18 +1,16 @@
 "use client"
 
 
-import { ACTION_TYPES, useMusicPlayer } from "../../MusicPlayerProvider"
+import { useShallow } from "zustand/shallow"
+import { useMusicPlayerStore } from "../../MusicPlayerStore"
+import { memo } from "react"
 
-export default function PlayButton({}) {
-    const { musicPlayerProperties: {settings: {state}}, dispatchMusicPlayerProperties } = useMusicPlayer()
-    const onClick = () => {
-        dispatchMusicPlayerProperties({type: ACTION_TYPES.SET_MUSIC_STATE, payload: {state: state === "playing"? "paused" : "playing"}})
-        
-    }
-    
+export default memo(function PlayButton({expandMenu} : {expandMenu: boolean}) {
+    const { state, setMusicState, isOpen } =  useMusicPlayerStore( useShallow( state => ({state: state.settings.state, setMusicState: state.setMusicState, isOpen: state.isOpen}) ) )
+    const onClick = () => setMusicState(state === "playing" ? "paused": "playing")
     return (
         <button className="cursor-pointer" onClick={ onClick }>
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg className={`fill-white ${isOpen && !expandMenu? "w-14": "w-9"} aspect-square transition-[width, height]  duration-200 ease-linear`}  viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g>
                     {
                         state === "playing" ?
@@ -28,3 +26,4 @@ export default function PlayButton({}) {
         </button>
     )
 }
+)

@@ -1,5 +1,5 @@
 "use client"
-import { useMusicPlayer, ACTION_TYPES } from "../MusicPlayerView/MusicPlayerProvider"
+import { useMusicPlayer, ACTION_TYPES, useMusicPlayerStore } from "../MusicPlayerView/MusicPlayerStore"
 
 type MusicPlayerOpenerButtonProps = { 
     playlistId?: number,
@@ -9,16 +9,9 @@ type MusicPlayerOpenerButtonProps = {
 } & React.PropsWithChildren & React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>
 
 export default function MusicPlayerOpenerButton({playlistId=0, musicId=0, needQueueChange=false, queue=[], children, ...buttonArgs} : MusicPlayerOpenerButtonProps) {
+    const setMusic =  useMusicPlayerStore( state => state.setMusic )
 
-    const { dispatchMusicPlayerProperties} = useMusicPlayer()
-
-
-    const onClick = () => {
-        dispatchMusicPlayerProperties({
-            type: ACTION_TYPES.SET_MUSIC,
-            payload: {playlistId, musicId, needQueueChange, queue}
-        })
-    }
+    const onClick = () => setMusic({playlistId, musicId, needQueueChange, queue})
     return (
         <button onClick={onClick} {...buttonArgs}>{children}</button>
     )

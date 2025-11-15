@@ -1,29 +1,27 @@
 "use client"
 
-import { ACTION_TYPES, useMusicPlayer } from "../../MusicPlayerProvider"
+import { useShallow } from "zustand/shallow"
+import {  useMusicPlayerStore } from "../../MusicPlayerStore"
+import { memo } from "react"
 
 type MoveQueueButtonProps = {
     type: "forwards" | "backwards"
+    expandMenu: boolean
 }
 
-export default function MoveQueueButton({type}: MoveQueueButtonProps) {
-    const { musicPlayerProperties: {queue, musicId}, dispatchMusicPlayerProperties } = useMusicPlayer()
+export default memo(function MoveQueueButton({ type, expandMenu }: MoveQueueButtonProps) {
+    const { queue, musicId, setQueueItem, isOpen } =  useMusicPlayerStore( useShallow( state => ({queue: state.queue, musicId: state.musicId, setQueueItem: state.setQueueItem, isOpen: state.isOpen}) ) )
     const trackQueueIndex = queue.findIndex((item) => item === musicId)
     const disabled = trackQueueIndex === 0 && type === "backwards" || trackQueueIndex + 1 === queue.length && type === "forwards"
 
 
     const onClick = () => {
-        dispatchMusicPlayerProperties({
-            type: ACTION_TYPES.SET_MUSIC,
-            payload: {
-                musicId: type === "forwards" ? queue[trackQueueIndex+1]: queue[trackQueueIndex-1]
-            }
-        })
+        setQueueItem( type === "forwards" ? "next": "previous" )
     }
 
     return (
-        <button className="grid cursor-pointer h-full aspect-square disabled:cursor-auto" disabled={disabled} onClick={onClick}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={` w-full h-full ${disabled ? "fill-(--disabled-color)" : "fill-white"} `}>
+        <button className="  h-full  not-disabled:cursor-pointer disabled:fill-(--disabled-color) not-disabled:fill-white" disabled={disabled} onClick={onClick}>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${isOpen && !expandMenu? "w-9": "w-6"} aspect-square transition-[width, height]  duration-200 ease-linear`}>
             
                 {
                     type === "backwards"?
@@ -37,4 +35,4 @@ export default function MoveQueueButton({type}: MoveQueueButtonProps) {
 
         </button>
     )
-}
+})
